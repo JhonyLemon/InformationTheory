@@ -19,6 +19,6 @@
       </BorderPane>
    </top>
    <center>
-      <LatexPaneView BorderPane.alignment="CENTER"></LatexPaneView>
+      <LatexPaneView fx:id="latexPaneView" BorderPane.alignment="CENTER"></LatexPaneView>
    </center>
 </BorderPane>
