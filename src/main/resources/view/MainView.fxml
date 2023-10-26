@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.MainViewController">
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Prawdopodobieństwo wystąpienia" >
+              <content>
+                  <fx:include fx:id="probabilityTab" source="ProbabilityView.fxml"/>
+              </content>
+          </Tab>
+          <Tab text="Entropia" >
+              <content>
+                  <fx:include fx:id="entropyTab" source="EntropyView.fxml"/>
+              </content>
+          </Tab>
+          <Tab text="Kompresja" >
+              <content>
+                  <fx:include fx:id="compressionTab" source="CompressionView.fxml"/>
+              </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Plik">
+            <items>
+              <MenuItem fx:id="openFileMenuButton" mnemonicParsing="false" onAction="#openFile" text="Otwórz plik" />
+                  <MenuItem fx:id="openFolderMenuButton" mnemonicParsing="false" onAction="#openFolder" text="Otwórz folder" />
+                  <MenuItem fx:id="openArchiveMenuButton" mnemonicParsing="false" onAction="#openArchive" text="Otwórz archiwum" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+</BorderPane>

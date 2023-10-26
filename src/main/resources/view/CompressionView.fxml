@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.BorderPane?>
+<?import org.controlsfx.control.SearchableComboBox?>
+
+<?import pl.polsl.informationtheory.fxml.component.LatexPaneView?>
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.CompressionViewController">
+
+</BorderPane>

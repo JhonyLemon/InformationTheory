@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.BorderPane?>
+<?import org.controlsfx.control.SearchableComboBox?>
+
+<?import pl.polsl.informationtheory.fxml.component.LatexPaneView?>
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.EntropyViewController">
+   <center>
+   </center>
+   <top>
+      <BorderPane BorderPane.alignment="CENTER">
+         <center>
+            <SearchableComboBox fx:id="fileSelection" onAction="#fileSelection" BorderPane.alignment="CENTER" />
+         </center>
+         <left>
+            <CheckBox fx:id="allFiles" mnemonicParsing="false" onAction="#allFiles" prefWidth="80.0" text="Wszystkie" BorderPane.alignment="CENTER" />
+         </left>
+      </BorderPane>
+   </top>
+   <center>
+      <LatexPaneView BorderPane.alignment="CENTER"></LatexPaneView>
+   </center>
+</BorderPane>
