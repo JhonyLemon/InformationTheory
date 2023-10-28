@@ -6,6 +6,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import org.controlsfx.control.SearchableComboBox?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.ProbabilityViewController">
    <center>
       <ListView fx:id="probabilityList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />

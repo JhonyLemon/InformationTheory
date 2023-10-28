@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.CheckMenuItem?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.MainViewController">
    <center>
@@ -36,8 +37,33 @@
             <items>
               <MenuItem fx:id="openFileMenuButton" mnemonicParsing="false" onAction="#openFile" text="Otwórz plik" />
                   <MenuItem fx:id="openFolderMenuButton" mnemonicParsing="false" onAction="#openFolder" text="Otwórz folder" />
-                  <MenuItem fx:id="openArchiveMenuButton" mnemonicParsing="false" onAction="#openArchive" text="Otwórz archiwum" />
             </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edycja">
+                <items>
+                    <Menu mnemonicParsing="false" text="Sortuj">
+                        <items>
+                            <Menu mnemonicParsing="false" text="Ilość wystąpień">
+                                <items>
+                                    <CheckMenuItem onAction="#sortCountDecreasing" fx:id="sortCountDecreasing" text="Malejąco"/>
+                                    <CheckMenuItem onAction="#sortCountIncreasing" fx:id="sortCountIncreasing" text="Rosnąco"/>
+                                </items>
+                            </Menu>
+                            <Menu mnemonicParsing="false" text="Wyraz/Słowo">
+                                <items>
+                                    <CheckMenuItem onAction="#sortIdentifierDecreasing" fx:id="sortIdentifierDecreasing" text="Malejąco"/>
+                                    <CheckMenuItem onAction="#sortIdentifierIncreasing" fx:id="sortIdentifierIncreasing" text="Rosnąco"/>
+                                </items>
+                            </Menu>
+                        </items>
+                    </Menu>
+                    <Menu mnemonicParsing="false" text="Znaki białe">
+                        <items>
+                            <CheckMenuItem onAction="#whitespaceCharDisplayUnicode" fx:id="whitespaceCharDisplayUnicode" text="Unicode"/>
+                            <CheckMenuItem onAction="#whitespaceCharDisplayLabel" fx:id="whitespaceCharDisplayLabel" text="Nazwa kodu"/>
+                        </items>
+                    </Menu>
+                </items>
           </Menu>
         </menus>
       </MenuBar>
