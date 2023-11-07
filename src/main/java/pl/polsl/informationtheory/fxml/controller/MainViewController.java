@@ -1,7 +1,12 @@
 package pl.polsl.informationtheory.fxml.controller;
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckMenuItem;
@@ -9,16 +14,26 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.controlsfx.control.TaskProgressView;
 import org.springframework.stereotype.Component;
+import pl.polsl.informationtheory.entity.Data;
 import pl.polsl.informationtheory.enums.AvailableFileExtensions;
+import pl.polsl.informationtheory.fxml.dialog.ProgressDialog;
+import pl.polsl.informationtheory.fxml.task.FileTask;
 import pl.polsl.informationtheory.repository.FileRepository;
+import pl.polsl.informationtheory.repository.MenuOptionsRepository;
 import pl.polsl.informationtheory.service.file.FileService;
+import pl.polsl.informationtheory.service.probability.ProbabilityService;
 
 import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static javafx.concurrent.WorkerStateEvent.WORKER_STATE_SUCCEEDED;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MainViewController implements Initializable {
@@ -55,6 +70,8 @@ public class MainViewController implements Initializable {
     private final DirectoryChooser directoryDialog = new DirectoryChooser();
 
     private final FileService fileService;
+    private final ProbabilityService probabilityService;
+    private final MenuOptionsRepository menuOptionsRepository;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -64,44 +81,55 @@ public class MainViewController implements Initializable {
     }
 
     public void openFile() {
-        probabilityTabController.defaultInit();
         List<File> files = fileDialog.showOpenMultipleDialog(stageReadOnly.get());
-        fileService.openFiles(files);
+        FileTask task = new FileTask(files);
+        task.addEventHandler(WORKER_STATE_SUCCEEDED, event -> {
+            fileService.setFileInfo(task.getValue().keySet());
+            probabilityService.setData(task.getValue());
+            probabilityTabController.defaultInit();
+        });
+        showLoadingDialog(task);
     }
 
     public void openFolder() {
-        probabilityTabController.defaultInit();
         File dir = directoryDialog.showDialog(stageReadOnly.get());
-        fileService.openDir(dir);
+        FileTask task = new FileTask(dir);
+        task.addEventHandler(WORKER_STATE_SUCCEEDED, event -> {
+            fileService.setFileInfo(task.getValue().keySet());
+            probabilityService.setData(task.getValue());
+            probabilityTabController.defaultInit();
+        });
+        showLoadingDialog(task);
+    }
+
+    public void showLoadingDialog(FileTask task) {
+        ProgressDialog progressDialog = new ProgressDialog(task, stageReadOnly.get());
+        progressDialog.show();
+        new Thread(task).start();
     }
 
     public void sortCountDecreasing(ActionEvent event) {
         deselectAllSortButtons();
-        fileRepository.setCurrentlySelectedComparator(FileRepository.ENTRY_VALUE_COMPARATOR_DECREASING);
+        menuOptionsRepository.getCurrentlySelectedComparator().setValue(Data.Comparator.countDescending());
         sortCountDecreasing.setSelected(true);
-        fileRepository.sort();
-
     }
 
     public void sortCountIncreasing(ActionEvent event) {
         deselectAllSortButtons();
-        fileRepository.setCurrentlySelectedComparator(FileRepository.ENTRY_VALUE_COMPARATOR_INCREASING);
+        menuOptionsRepository.getCurrentlySelectedComparator().setValue(Data.Comparator.countAscending());
         sortCountIncreasing.setSelected(true);
-        fileRepository.sort();
     }
 
     public void sortIdentifierDecreasing(ActionEvent event) {
         deselectAllSortButtons();
-        fileRepository.setCurrentlySelectedComparator(FileRepository.ENTRY_KEY_COMPARATOR_DECREASING);
+        menuOptionsRepository.getCurrentlySelectedComparator().setValue(Data.Comparator.valueDescending());
         sortIdentifierDecreasing.setSelected(true);
-        fileRepository.sort();
     }
 
     public void sortIdentifierIncreasing(ActionEvent event) {
         deselectAllSortButtons();
-        fileRepository.setCurrentlySelectedComparator(FileRepository.ENTRY_KEY_COMPARATOR_INCREASING);
+        menuOptionsRepository.getCurrentlySelectedComparator().setValue(Data.Comparator.valueAscending());
         sortIdentifierIncreasing.setSelected(true);
-        fileRepository.sort();
     }
 
     private void deselectAllSortButtons() {
@@ -113,16 +141,14 @@ public class MainViewController implements Initializable {
 
     public void whitespaceCharDisplayUnicode(ActionEvent event) {
         deselectAllWhitespaceButtons();
-        fileRepository.getUseUnicodeForWhitespaceCharacters().setValue(true);
+        menuOptionsRepository.useUnicode().setValue(true);
         whitespaceCharDisplayUnicode.setSelected(true);
-        probabilityTabController.refresh();
     }
 
     public void whitespaceCharDisplayLabel(ActionEvent event) {
         deselectAllWhitespaceButtons();
-        fileRepository.getUseUnicodeForWhitespaceCharacters().setValue(false);
+        menuOptionsRepository.useUnicode().setValue(false);
         whitespaceCharDisplayLabel.setSelected(true);
-        probabilityTabController.refresh();
     }
 
     private void deselectAllWhitespaceButtons() {

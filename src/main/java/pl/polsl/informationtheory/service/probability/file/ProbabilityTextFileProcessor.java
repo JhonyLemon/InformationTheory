@@ -1,8 +1,10 @@
 package pl.polsl.informationtheory.service.probability.file;
 
 import org.springframework.stereotype.Service;
-import pl.polsl.informationtheory.entity.FileEntity;
-import pl.polsl.informationtheory.enums.ProbabilityType;
+import pl.polsl.informationtheory.entity.Data;
+import pl.polsl.informationtheory.entity.FileData;
+import pl.polsl.informationtheory.entity.FileInfo;
+import pl.polsl.informationtheory.enums.DataType;
 import pl.polsl.informationtheory.exception.InformationTechnologyException;
 
 import java.io.FileInputStream;
@@ -10,38 +12,60 @@ import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class ProbabilityTextFileProcessor extends ProbabilityProcessor {
 
     @Override
-    public Map<ProbabilityType, Map<String, Integer>> probability(FileEntity fileEntity) {
-        Map<ProbabilityType, Map<String, Integer>> probabilityTypeMap = new EnumMap<>(ProbabilityType.class);
-        Map<String, Integer> wordCount = new HashMap<>();
-        Map<String, Integer> characterCount = new HashMap<>();
-        probabilityTypeMap.put(ProbabilityType.CHARACTERS, characterCount);
-        probabilityTypeMap.put(ProbabilityType.WORDS, wordCount);
-        try (FileChannel channel = new FileInputStream(fileEntity.getFile()).getChannel()) {
+    public FileData probability(FileInfo fileInfo) {
+        Map<String, Data> words = new HashMap<>();
+        Map<String, Data> characters = new HashMap<>();
+        AtomicInteger charactersCount = new AtomicInteger(0);
+        AtomicInteger wordsCount = new AtomicInteger(0);
+
+        try (FileChannel channel = new FileInputStream(fileInfo.getFile()).getChannel()) {
             MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
             CharBuffer charBuffer = StandardCharsets.UTF_8.decode(buffer);
             StringBuilder word = new StringBuilder();
             while(charBuffer.hasRemaining()) {
                 String character = String.valueOf(charBuffer.get());
-                characterCount.put(character,characterCount.getOrDefault(character,0)+1);
+
+                charactersCount.addAndGet(1);
+                if(characters.containsKey(character)) {
+                    characters.get(character).addCount(1);
+                } else {
+                    characters.put(character, new Data(DataType.CHARACTER, character, 1));
+                }
+
                 if((character.isBlank() || character.equals(".") || character.equals(",")) && !word.toString().isBlank()) {
-                    wordCount.put(word.toString(),wordCount.getOrDefault(word.toString(),0)+1);
+
+                    wordsCount.addAndGet(1);
+                    if(words.containsKey(word.toString())) {
+                        words.get(word.toString()).addCount(1);
+                    } else {
+                        words.put(word.toString(), new Data(DataType.WORD, word.toString(), 1));
+                    }
+
                     word = new StringBuilder();
                 } else if(!character.isBlank() && !character.equals(".") && !character.equals(",")){
                     word.append(character);
                 }
             }
+            characters.values().forEach(c -> {
+                c.setCountAll(charactersCount.get());
+                c.initialize();
+            });
+            words.values().forEach(c -> {
+                c.setCountAll(wordsCount.get());
+                c.initialize();
+            });
+
         } catch (Exception e) {
             throw new InformationTechnologyException("Failed to load file");
         }
-        return probabilityTypeMap;
+        return new FileData(words.values(), characters.values());
     }
 
 

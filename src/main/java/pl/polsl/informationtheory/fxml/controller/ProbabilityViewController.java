@@ -1,12 +1,7 @@
 package pl.polsl.informationtheory.fxml.controller;
 
-import com.sun.javafx.collections.ObservableListWrapper;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.MapChangeListener;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,12 +11,17 @@ import javafx.scene.control.ListView;
 import lombok.RequiredArgsConstructor;
 import org.controlsfx.control.SearchableComboBox;
 import org.springframework.stereotype.Component;
-import pl.polsl.informationtheory.enums.ProbabilityType;
-import pl.polsl.informationtheory.fxml.factory.MapEntryCellFactory;
-import pl.polsl.informationtheory.repository.FileRepository;
+import pl.polsl.informationtheory.entity.Data;
+import pl.polsl.informationtheory.entity.FileInfo;
+import pl.polsl.informationtheory.enums.DataType;
+import pl.polsl.informationtheory.fxml.factory.DataCellFactory;
+import pl.polsl.informationtheory.service.MenuOptionsService;
+import pl.polsl.informationtheory.service.file.FileService;
+import pl.polsl.informationtheory.service.probability.ProbabilityService;
 
 import java.net.URL;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -30,94 +30,83 @@ import java.util.ResourceBundle;
 public class ProbabilityViewController implements Initializable {
 
     @FXML
-    private ListView<Map.Entry<String, Integer>> probabilityList;
+    private ListView<Data> probabilityList;
 
     @FXML
-    private SearchableComboBox<String> fileSelection;
+    private SearchableComboBox<FileInfo> fileSelection;
 
     @FXML
-    private ComboBox<ProbabilityType> typeSelection;
+    private ComboBox<DataType> typeSelection;
 
     @FXML
     private CheckBox allFiles;
 
-    private final FileRepository fileRepository;
+    private final FileService fileService;
+    private final ProbabilityService probabilityService;
+    private final MenuOptionsService menuOptionsService;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        typeSelection.getItems().setAll(ProbabilityType.values());
-        fileSelection.setItems(fileRepository.getKeys());
-        probabilityList.setCellFactory(new MapEntryCellFactory<>(fileRepository.getUseUnicodeForWhitespaceCharacters()));
+        menuOptionsService.getComparator().addListener((observableValue, dataComparator, t1) -> FXCollections.sort(probabilityList.getItems(), menuOptionsService.getComparator().getValue()));
+        menuOptionsService.useUnicode().addListener((observableValue, dataComparator, t1) -> probabilityList.refresh());
+
+        probabilityList.setCellFactory(new DataCellFactory(menuOptionsService.useUnicode()));
+        typeSelection.getItems().setAll(DataType.values());
+
         allFiles.setDisable(true);
         fileSelection.setDisable(true);
         typeSelection.setDisable(true);
-        fileSelection.getItems().addListener((ListChangeListener<String>) change -> {
-            if(change.getList().isEmpty()) {
-                allFiles.setDisable(true);
-                fileSelection.setDisable(true);
-                typeSelection.setDisable(true);
-            } else {
-                allFiles.setDisable(false);
-                typeSelection.setDisable(false);
-            }
-        });
-        defaultInit();
+    }
+
+    public void defaultInit() {
+        allFiles.setSelected(true);
+        allFiles.setDisable(false);
+
+        typeSelection.setValue(DataType.CHARACTER);
+
+        fileSelection.setDisable(true);
+        fileSelection.setValue(null);
+        fileSelection.getItems().clear();
+        fileSelection.getItems().addAll(fileService.getFileInfo());
+
+        typeSelection.setDisable(false);
+        setSelectedList(probabilityService.getAllList(DataType.CHARACTER));
+    }
+
+    private void setSelectedList(List<Data> data) {
+        this.probabilityList.getItems().clear();
+        this.probabilityList.getItems().addAll(data);
+        FXCollections.sort(probabilityList.getItems(), menuOptionsService.getComparator().getValue());
     }
 
     public void allFiles(ActionEvent event) {
         if(allFiles.isSelected()) {
             fileSelection.setDisable(true);
             fileSelection.setValue(null);
-            if(ProbabilityType.WORDS.equals(typeSelection.getValue())) {
-                probabilityList.setItems(fileRepository.getAllWordsCountList());
-            } else if (ProbabilityType.CHARACTERS.equals(typeSelection.getValue())) {
-                probabilityList.setItems(fileRepository.getAllCharactersCountList());
-            }
+            setSelectedList(probabilityService.getAllList(typeSelection.getValue()));
         } else {
             fileSelection.setDisable(false);
-            probabilityList.setItems(null);
+            setSelectedList(new ArrayList<>());
         }
     }
 
     public void typeSelection(ActionEvent event) {
         if(allFiles.isSelected()) {
-            if(ProbabilityType.WORDS.equals(typeSelection.getValue())) {
-                probabilityList.setItems(fileRepository.getAllWordsCountList());
-            } else if (ProbabilityType.CHARACTERS.equals(typeSelection.getValue())) {
-                probabilityList.setItems(fileRepository.getAllCharactersCountList());
-            }
+            setSelectedList(probabilityService.getAllList(typeSelection.getValue()));
+
         } else if(isFileSelected()) {
-            if(ProbabilityType.WORDS.equals(typeSelection.getValue())) {
-                probabilityList.setItems(fileRepository.getFiles().get(fileSelection.getValue()).getWordsCount());
-            } else if (ProbabilityType.CHARACTERS.equals(typeSelection.getValue())) {
-                probabilityList.setItems(fileRepository.getFiles().get(fileSelection.getValue()).getCharactersCount());
-            }
+            setSelectedList(probabilityService.getList(typeSelection.getValue(), fileSelection.getValue()));
         }
     }
 
     public void fileSelection(ActionEvent event) {
         if(isFileSelected()) {
-            if(ProbabilityType.WORDS.equals(typeSelection.getValue())) {
-                probabilityList.setItems(fileRepository.getFiles().get(fileSelection.getValue()).getWordsCount());
-            } else if (ProbabilityType.CHARACTERS.equals(typeSelection.getValue())) {
-                probabilityList.setItems(fileRepository.getFiles().get(fileSelection.getValue()).getCharactersCount());
-            }
+            setSelectedList(probabilityService.getList(typeSelection.getValue(), fileSelection.getValue()));
         }
-    }
-
-    public void refresh() {
-        probabilityList.refresh();
     }
 
     private boolean isFileSelected() {
         return Objects.nonNull(fileSelection.getValue());
     }
 
-    public void defaultInit() {
-        typeSelection.setValue(ProbabilityType.CHARACTERS);
-        probabilityList.setItems(fileRepository.getAllCharactersCountList());
-        allFiles.setSelected(true);
-        fileSelection.setDisable(true);
-        fileSelection.setValue(null);
-    }
 }
