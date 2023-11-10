@@ -20,7 +20,7 @@ public class Data {
     private Integer count = 0;
     private Integer countAll = 0;
     private BigDecimal probability = BigDecimal.ZERO;
-    private BigInteger informationAmount = BigInteger.ZERO;
+    private BigDecimal elementaryInformationAmount = BigDecimal.ZERO;
     private BigDecimal entropy = BigDecimal.ZERO;
     @Getter(AccessLevel.NONE)
     private boolean initialized = false;
@@ -37,8 +37,8 @@ public class Data {
             this.probability = BigDecimal.valueOf(this.count)
                       .setScale(5, RoundingMode.HALF_UP)
                       .divide(BigDecimal.valueOf(this.countAll), RoundingMode.HALF_UP);
-            this.informationAmount = log(2,  this.probability).negate().toBigInteger();
-            this.entropy = this.probability.multiply(new BigDecimal(this.informationAmount));
+            this.elementaryInformationAmount = log(2,  this.probability).negate();
+            this.entropy = this.probability.multiply(this.elementaryInformationAmount);
         }
     }
 
@@ -54,13 +54,8 @@ public class Data {
         }
     }
 
-    public void addCountAll(Integer countAll) {
-        if (!initialized) {
-            this.countAll+= countAll;
-        }
-    }
-
     public static final class Comparator {
+        private Comparator(){}
         private static final java.util.Comparator<Data> valueComparator = java.util.Comparator.comparing(Data::getValue);
         private static final java.util.Comparator<Data> countComparator = java.util.Comparator.comparing(Data::getCount);
 
