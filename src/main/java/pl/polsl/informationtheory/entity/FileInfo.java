@@ -6,7 +6,6 @@ import pl.polsl.informationtheory.enums.AvailableFileExtensions;
 import java.io.File;
 
 @Getter
-@ToString
 @EqualsAndHashCode(callSuper = false)
 public class FileInfo {
     private final String path;
@@ -19,5 +18,10 @@ public class FileInfo {
 
     public File getFile() {
         return new File(path);
+    }
+
+    @Override
+    public String toString() {
+        return path;
     }
 }

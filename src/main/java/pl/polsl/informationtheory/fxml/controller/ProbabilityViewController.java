@@ -1,7 +1,6 @@
 package pl.polsl.informationtheory.fxml.controller;
 
 import javafx.collections.FXCollections;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

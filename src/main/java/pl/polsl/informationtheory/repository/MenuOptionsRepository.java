@@ -15,7 +15,7 @@ import java.util.Comparator;
 @Repository
 public class MenuOptionsRepository {
     @Accessors(fluent = true)
-    private final BooleanProperty useUnicode = new SimpleBooleanProperty(false);
+    private final BooleanProperty useUnicode = new SimpleBooleanProperty(true);
     private final ObjectProperty<Comparator<Data>> currentlySelectedComparator = new SimpleObjectProperty<>(Data.Comparator.countDescending());
 
 }

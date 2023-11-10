@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.LoadingViewController">
+    <center>
+        <TreeView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" showRoot="false" BorderPane.alignment="CENTER">
+            <TreeItem fx:id="messages">
+                <children>
+                    <TreeItem fx:id="findMessages" value="Finding files in directory task">
+                        <children>
+                        </children>
+                    </TreeItem>
+                    <TreeItem fx:id="loadMessages" value="Loading basic information from files task">
+                        <children>
+                        </children>
+                    </TreeItem>
+                    <TreeItem fx:id="readMessages" value="Reading content of files task">
+                        <children>
+                        </children>
+                    </TreeItem>
+                </children>
+            </TreeItem>
+
+        </TreeView>
+    </center>
+    <top>
+        <VBox maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="findFilesLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Finding files in directory" />
+                <ProgressBar fx:id="findFilesProgress" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+                <Label fx:id="loadFilesLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Loading basic information from files" />
+                <ProgressBar fx:id="loadFilesProgress" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" progress="0.0" />
+                <Label fx:id="readFilesLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Reading content of files" />
+                <ProgressBar fx:id="readFilesProgress" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" progress="0.0" />
+            </children>
+        </VBox>
+    </top>
+</BorderPane>

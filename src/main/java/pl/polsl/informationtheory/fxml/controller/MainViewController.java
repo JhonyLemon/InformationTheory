@@ -2,26 +2,25 @@ package pl.polsl.informationtheory.fxml.controller;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.CheckMenuItem;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.*;
+import javafx.util.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.controlsfx.control.TaskProgressView;
+import org.controlsfx.control.NotificationPane;
+import org.controlsfx.control.Notifications;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import pl.polsl.informationtheory.entity.Data;
 import pl.polsl.informationtheory.enums.AvailableFileExtensions;
-import pl.polsl.informationtheory.fxml.dialog.ProgressDialog;
-import pl.polsl.informationtheory.fxml.task.FileTask;
-import pl.polsl.informationtheory.repository.FileRepository;
+import pl.polsl.informationtheory.event.LoadingEvent;
 import pl.polsl.informationtheory.repository.MenuOptionsRepository;
 import pl.polsl.informationtheory.service.file.FileService;
 import pl.polsl.informationtheory.service.probability.ProbabilityService;
@@ -37,16 +36,6 @@ import static javafx.concurrent.WorkerStateEvent.WORKER_STATE_SUCCEEDED;
 @Component
 @RequiredArgsConstructor
 public class MainViewController implements Initializable {
-
-    @FXML
-    private ProbabilityViewController probabilityTabController;
-
-    @FXML
-    private EntropyViewController entropyTabController;
-
-    @FXML
-    private CompressionViewController compressionTabController;
-
     @FXML
     private CheckMenuItem sortCountDecreasing;
     @FXML
@@ -55,20 +44,36 @@ public class MainViewController implements Initializable {
     private CheckMenuItem sortIdentifierDecreasing;
     @FXML
     private CheckMenuItem sortIdentifierIncreasing;
-
     @FXML
     private CheckMenuItem whitespaceCharDisplayUnicode;
     @FXML
     private CheckMenuItem whitespaceCharDisplayLabel;
 
+    @FXML
+    private TabPane tabPane;
 
-    private final ReadOnlyObjectProperty<Stage> stageReadOnly;
+    @FXML
+    private ProbabilityViewController probabilityTabController;
+    @FXML
+    private EntropyViewController entropyTabController;
+    @FXML
+    private CompressionViewController compressionTabController;
+    @FXML
+    private LoadingViewController loadingTabController;
 
-    private final FileRepository fileRepository;
+    @FXML
+    private Tab probabilityTabComp;
+    @FXML
+    private Tab entropyTabComp;
+    @FXML
+    private Tab compressionTabComp;
+    @FXML
+    private Tab loadingTabComp;
 
     private final FileChooser fileDialog = new FileChooser();
     private final DirectoryChooser directoryDialog = new DirectoryChooser();
 
+    private final ReadOnlyObjectProperty<Stage> stageReadOnly;
     private final FileService fileService;
     private final ProbabilityService probabilityService;
     private final MenuOptionsRepository menuOptionsRepository;
@@ -78,34 +83,41 @@ public class MainViewController implements Initializable {
         fileDialog.getExtensionFilters().addAll(AvailableFileExtensions.getAllFilters());
         sortCountDecreasing.setSelected(true);
         whitespaceCharDisplayUnicode.setSelected(true);
+        tabPane.getTabs().clear();
     }
 
     public void openFile() {
         List<File> files = fileDialog.showOpenMultipleDialog(stageReadOnly.get());
-        FileTask task = new FileTask(files);
-        task.addEventHandler(WORKER_STATE_SUCCEEDED, event -> {
-            fileService.setFileInfo(task.getValue().keySet());
-            probabilityService.setData(task.getValue());
-            probabilityTabController.defaultInit();
-        });
-        showLoadingDialog(task);
+        loadingTabController.load(files);
+        tabPane.getTabs().add(loadingTabComp);
+        tabPane.getSelectionModel().select(loadingTabComp);
     }
 
     public void openFolder() {
         File dir = directoryDialog.showDialog(stageReadOnly.get());
-        FileTask task = new FileTask(dir);
-        task.addEventHandler(WORKER_STATE_SUCCEEDED, event -> {
-            fileService.setFileInfo(task.getValue().keySet());
-            probabilityService.setData(task.getValue());
-            probabilityTabController.defaultInit();
-        });
-        showLoadingDialog(task);
+        loadingTabController.load(dir);
+        tabPane.getTabs().add(loadingTabComp);
+        tabPane.getSelectionModel().select(loadingTabComp);
     }
 
-    public void showLoadingDialog(FileTask task) {
-        ProgressDialog progressDialog = new ProgressDialog(task, stageReadOnly.get());
-        progressDialog.show();
-        new Thread(task).start();
+    @EventListener
+    public void handleSuccessful(LoadingEvent event) {
+        Platform.runLater(() -> {
+            Notifications
+                    .create()
+                    .owner(stageReadOnly.getValue())
+                    .title("Loading finished")
+                    .text((event.isSuccess() ? "Succeeded" : "Failed"))
+                    .hideAfter(Duration.seconds(5))
+                    .position(Pos.TOP_CENTER)
+                    .show();
+            if(event.isSuccess()) {
+                tabPane.getTabs().add(probabilityTabComp);
+                tabPane.getTabs().add(entropyTabComp);
+                tabPane.getTabs().add(compressionTabComp);
+                probabilityTabController.defaultInit();
+            }
+        });
     }
 
     public void sortCountDecreasing(ActionEvent event) {

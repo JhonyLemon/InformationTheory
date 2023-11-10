@@ -1,5 +1,6 @@
 package pl.polsl.informationtheory.configuration;
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXMLLoader;
@@ -33,24 +34,25 @@ public class StageConfiguration implements ApplicationListener<StageConfiguratio
 
     @Override
     public void onApplicationEvent(StageReadyEvent event) {
-        try {
-            FXMLLoader fxmlLoader = loaderConfiguration.fxmlLoader(mainView.getURL());
-            Parent parent = fxmlLoader.load();
-            stage.set(event.getStage());
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader fxmlLoader = loaderConfiguration.fxmlLoader(mainView.getURL());
+                Parent parent = fxmlLoader.load();
+                stage.set(event.getStage());
 
-            Scene scene = new Scene(parent, 600, 400);
-            Camera camera = new ParallelCamera();
-            scene.setCamera(camera);
-            stage.get().setScene(scene);
+                Scene scene = new Scene(parent, 600, 400);
+                Camera camera = new ParallelCamera();
+                scene.setCamera(camera);
+                stage.get().setScene(scene);
 
-            stage.get().setTitle("Teoria Informacji Projekt");
-            stage.get().setMaximized(true);
-            stage.get().show();
-
-        } catch (IOException e) {
-            log.error("Failed to start application", e);
-            throw new InformationTechnologyException("Failed to load",e);
-        }
+                stage.get().setTitle("Teoria Informacji Projekt");
+                stage.get().setMaximized(true);
+                stage.get().show();
+            } catch (IOException e) {
+                log.error("Failed to start application", e);
+                throw new InformationTechnologyException("Failed to load", e);
+            }
+        });
     }
 
     public static class StageReadyEvent extends ApplicationEvent {
@@ -58,7 +60,7 @@ public class StageConfiguration implements ApplicationListener<StageConfiguratio
             super(stage);
         }
 
-        public Stage getStage(){
+        public Stage getStage() {
             return ((Stage) getSource());
         }
     }

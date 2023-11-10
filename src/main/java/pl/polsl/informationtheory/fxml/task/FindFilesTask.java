@@ -1,9 +1,9 @@
 package pl.polsl.informationtheory.fxml.task;
 
 import javafx.concurrent.Task;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import pl.polsl.informationtheory.enums.TaskType;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,21 +20,35 @@ import java.util.Objects;
 import static pl.polsl.informationtheory.enums.AvailableFileExtensions.isExtension;
 
 @Slf4j
-@NoArgsConstructor
-public class FindFilesTask extends Task<List<File>> implements TaskProgress {
-    @Setter
-    private File dir;
-    @Setter
-    private TaskOnProgressDataChange onUpdate;
+@RequiredArgsConstructor
+public class FindFilesTask extends Task<List<File>> {
+    private static final TaskType TYPE = TaskType.DIR_SEARCHING;
+
+    private final File dir;
+    private final TaskOnProgressDataChange onUpdate;
 
     @Override
-    public void onNewMessage(String message) {
-        onUpdate.onMessagesUpdate(message, 1);
+    protected void updateMessage(String s) {
+        onUpdate.onMessagesUpdate(s, TYPE);
+        super.updateMessage(s);
     }
 
     @Override
-    public void onProgress(Double progress) {
-        onUpdate.onProgressUpdate(progress, 1);
+    protected void updateProgress(double v, double v1) {
+        onUpdate.onProgressUpdate(v/v1, TYPE);
+        super.updateProgress(v, v1);
+    }
+
+    @Override
+    protected void succeeded() {
+        onUpdate.onFinish(true, TYPE);
+        super.succeeded();
+    }
+
+    @Override
+    protected void failed() {
+        onUpdate.onFinish(false, TYPE);
+        super.failed();
     }
 
     @Override
@@ -42,11 +56,11 @@ public class FindFilesTask extends Task<List<File>> implements TaskProgress {
         List<File> files = new ArrayList<>();
         if (Objects.isNull(dir) || dir.isFile()) {
             log.error("No directory selected");
-            onNewMessage("No directory selected");
-            onProgress(1d);
+            updateMessage("No directory selected");
+            updateProgress(1d,1d);
             return files;
         }
-        onNewMessage("Staring to search for files in directory");
+        updateMessage("Staring to search for files in directory");
         log.info("Staring to search for files in directory {}", dir.getName());
         try {
             Files.walkFileTree(dir.toPath(), Collections.emptySet(), 10, new SimpleFileVisitor<>() {
@@ -56,31 +70,32 @@ public class FindFilesTask extends Task<List<File>> implements TaskProgress {
                         File f = file.toFile();
                         files.add(f);
                         log.info("Found {} file", f.getName());
-                        onNewMessage("Found " + f.getName() + " file");
+                        updateMessage("Found " + f.getName() + " file");
                     }
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                    onNewMessage("Skipped " + file.toFile().getName() + " file");
+                    log.info("Skipped {} file", file.toFile().getName());
+                    updateMessage("Skipped " + file.toFile().getName() + " file");
                     return FileVisitResult.SKIP_SUBTREE;
                 }
             });
         } catch (Exception e) {
             log.error("Failed to find files in directory", e);
-            onNewMessage("Failed to find files in directory");
-            onProgress(0d);
+            updateMessage("Failed to find files in directory");
+            updateProgress(0d,1d);
             failed();
         }
 
-        onProgress(1d);
+        updateProgress(1d, 1);
         if(files.isEmpty()) {
             log.info("No valid files found");
-            onNewMessage("No valid files found");
+            updateMessage("No valid files found");
         } else {
             log.info("Found all valid files from directory");
-            onNewMessage("Found all valid files from directory");
+            updateMessage("Found all valid files from directory");
         }
 
         return files;
