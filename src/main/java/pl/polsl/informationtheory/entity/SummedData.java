@@ -1,32 +1,21 @@
 package pl.polsl.informationtheory.entity;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static pl.polsl.informationtheory.util.StreamHelper.toSumedData;
-
+@ToString
+@EqualsAndHashCode
 public class SummedData implements WordsAndCharacters<List<Data>> {
     private final List<Data> words = new ArrayList<>();
     private final List<Data> characters = new ArrayList<>();
 
-    public SummedData(Collection<FileData> data) {
-
-
-
-        this.words.addAll(
-                data.stream()
-                        .map(FileData::getWords)
-                        .flatMap(List::stream)
-                        .collect(toSumedData(data.stream().map(FileData::getWordsCount).mapToInt(Integer::intValue).sum()))
-        );
-        this.characters.addAll(
-                data.stream()
-                        .map(FileData::getCharacters)
-                        .flatMap(List::stream)
-                        .collect(toSumedData(data.stream().map(FileData::getCharactersCount).mapToInt(Integer::intValue).sum()))
-        );
+    public SummedData(Collection<Data> words, Collection<Data> characters) {
+        this.words.addAll(words);
+        this.characters.addAll(characters);
     }
 
     @Override

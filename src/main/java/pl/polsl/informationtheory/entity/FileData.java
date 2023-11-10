@@ -1,11 +1,13 @@
 package pl.polsl.informationtheory.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@EqualsAndHashCode
 public class FileData implements WordsAndCharacters<List<Data>> {
     private final List<Data> words = new ArrayList<>();
     private final List<Data> characters = new ArrayList<>();

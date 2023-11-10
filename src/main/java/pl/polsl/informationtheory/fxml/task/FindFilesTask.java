@@ -1,5 +1,6 @@
 package pl.polsl.informationtheory.fxml.task;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,25 +30,27 @@ public class FindFilesTask extends Task<List<File>> {
 
     @Override
     protected void updateMessage(String s) {
-        onUpdate.onMessagesUpdate(s, TYPE);
+        Platform.runLater(() -> onUpdate.onMessagesUpdate(s, TYPE));
         super.updateMessage(s);
     }
 
     @Override
     protected void updateProgress(double v, double v1) {
-        onUpdate.onProgressUpdate(v/v1, TYPE);
+        Platform.runLater(() -> onUpdate.onProgressUpdate(v/v1, TYPE));
         super.updateProgress(v, v1);
     }
 
     @Override
     protected void succeeded() {
-        onUpdate.onFinish(true, TYPE);
+        log.info("Task: {} succeeded", TYPE);
+        Platform.runLater(() -> onUpdate.onFinish(true, TYPE));
         super.succeeded();
     }
 
     @Override
     protected void failed() {
-        onUpdate.onFinish(false, TYPE);
+        log.info("Task: {} failed", TYPE);
+        Platform.runLater(() -> onUpdate.onFinish(false, TYPE));
         super.failed();
     }
 

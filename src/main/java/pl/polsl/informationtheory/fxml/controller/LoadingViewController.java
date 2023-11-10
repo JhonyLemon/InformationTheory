@@ -1,6 +1,5 @@
 package pl.polsl.informationtheory.fxml.controller;
 
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -31,6 +30,8 @@ public class LoadingViewController implements Initializable {
     private ProgressBar loadFilesProgress;
     @FXML
     private ProgressBar readFilesProgress;
+    @FXML
+    private ProgressBar savingDataProgress;
 
     @FXML
     private Label findFilesLabel;
@@ -38,6 +39,8 @@ public class LoadingViewController implements Initializable {
     private Label loadFilesLabel;
     @FXML
     private Label readFilesLabel;
+    @FXML
+    private Label savingDataLabel;
 
     @FXML
     private TreeItem<String> messages;
@@ -53,34 +56,32 @@ public class LoadingViewController implements Initializable {
     private final FileService fileService;
     private final ApplicationEventPublisher publisher;
 
+
     private final TaskOnProgressDataChange onUpdate = new TaskOnProgressDataChange() {
         @Override
         public void onMessagesUpdate(String message, TaskType task) {
-            Platform.runLater(() -> {
-                switch (task) {
-                    case DIR_SEARCHING -> findMessages.getChildren().add(new TreeItem<>(message));
-                    case FILE_LOADING -> loadMessages.getChildren().add(new TreeItem<>(message));
-                    case FILE_READING -> readMessages.getChildren().add(new TreeItem<>(message));
-                    default -> log.warn("Wrong order");
-                }
-            });
+            switch (task) {
+                case DIR_SEARCHING -> findMessages.getChildren().add(new TreeItem<>(message));
+                case FILE_LOADING -> loadMessages.getChildren().add(new TreeItem<>(message));
+                case FILE_READING -> readMessages.getChildren().add(new TreeItem<>(message));
+                default -> log.warn("Wrong order");
+            }
         }
 
         @Override
         public void onProgressUpdate(Double progress, TaskType task) {
-            Platform.runLater(() -> {
-                switch (task) {
-                    case DIR_SEARCHING -> findFilesProgress.setProgress(progress);
-                    case FILE_LOADING -> loadFilesProgress.setProgress(progress);
-                    case FILE_READING -> readFilesProgress.setProgress(progress);
-                    default -> log.warn("Wrong order");
-                }
-            });
+            switch (task) {
+                case DIR_SEARCHING -> findFilesProgress.setProgress(progress);
+                case FILE_LOADING -> loadFilesProgress.setProgress(progress);
+                case FILE_READING -> readFilesProgress.setProgress(progress);
+                case SAVING,SUMMING -> savingDataProgress.setProgress(progress);
+                default -> log.warn("Wrong order");
+            }
         }
 
         @Override
         public void onFinish(boolean succeeded, TaskType task) {
-            if (task.equals(TaskType.FILE_READING)) {
+            if (task.equals(TaskType.SAVING)) {
                 publisher.publishEvent(new LoadingEvent(succeeded));
             }
         }
@@ -92,7 +93,6 @@ public class LoadingViewController implements Initializable {
         findFilesLabel.managedProperty().bind(loadingDir);
         findFilesProgress.visibleProperty().bind(loadingDir);
         findFilesProgress.managedProperty().bind(loadingDir);
-
         messages.getChildren().clear();
     }
 
@@ -121,6 +121,7 @@ public class LoadingViewController implements Initializable {
         this.findFilesProgress.setProgress(-1);
         this.loadFilesProgress.setProgress(0);
         this.readFilesProgress.setProgress(0);
+        this.savingDataProgress.setProgress(0);
         this.messages.getChildren().clear();
         this.findMessages.getChildren().clear();
         this.loadMessages.getChildren().clear();

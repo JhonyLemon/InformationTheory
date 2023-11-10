@@ -1,6 +1,7 @@
 package pl.polsl.informationtheory.entity;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import pl.polsl.informationtheory.enums.DataType;
 
@@ -12,6 +13,7 @@ import java.util.Comparator;
 import static pl.polsl.informationtheory.util.MathExtension.log;
 
 @Getter
+@EqualsAndHashCode
 public class Data {
     private final DataType type;
     private final String value;

@@ -1,22 +1,18 @@
 package pl.polsl.informationtheory.service.file;
 
-import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import pl.polsl.informationtheory.entity.FileInfo;
 import pl.polsl.informationtheory.fxml.task.*;
 import pl.polsl.informationtheory.repository.FileRepository;
 import pl.polsl.informationtheory.repository.ProbabilityRepository;
-import pl.polsl.informationtheory.service.probability.ProbabilityService;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.Callable;
 
 @Service
 @Slf4j
@@ -24,7 +20,7 @@ import java.util.concurrent.Callable;
 public class FileService {
     private final FileRepository fileRepository;
     private final ProbabilityRepository probabilityRepository;
-    private final ProbabilityService probabilityService;
+    private final ThreadPoolTaskExecutor executor;
 
 
     public List<FileInfo> getFileInfo() {
@@ -35,32 +31,36 @@ public class FileService {
         fileRepository.setFiles(fileInfo);
     }
 
-    @Async
+
     public void load(List<File> files, TaskOnProgressDataChange onUpdate) {
         LoadFileInfoTask loadFileInfoTask = new LoadFileInfoTask(files, onUpdate);
         load(onUpdate, loadFileInfoTask);
     }
 
-    @Async
+
     public void load(File dir, TaskOnProgressDataChange onUpdate) {
         FindFilesTask findFilesTask = new FindFilesTask(dir, onUpdate);
         findFilesTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, e1 -> {
             LoadFileInfoTask loadFileInfoTask = new LoadFileInfoTask(findFilesTask.getValue(), onUpdate);
             load(onUpdate, loadFileInfoTask);
         });
-        findFilesTask.run();
+        executor.execute(findFilesTask);
     }
 
-    private void load(TaskOnProgressDataChange onUpdate, LoadFileInfoTask loadFileInfoTask) {
-        loadFileInfoTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, e2 -> {
+    protected void load(TaskOnProgressDataChange onUpdate, LoadFileInfoTask loadFileInfoTask) {
+        loadFileInfoTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, e1 -> {
             ReadFilesTask readFilesTask = new ReadFilesTask(loadFileInfoTask.getValue(), onUpdate);
-            readFilesTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, e3 -> {
-                SaveTask saveTask = new SaveTask(readFilesTask.getValue(), onUpdate, fileRepository, probabilityRepository);
-                saveTask.run();
+            readFilesTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, e2 -> {
+                GenerateSummedDataTask summedDataTask = new GenerateSummedDataTask(readFilesTask.getValue().values(), onUpdate);
+                summedDataTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, e3 -> {
+                    SaveTask saveTask = new SaveTask(readFilesTask.getValue(), summedDataTask.getValue(), onUpdate, fileRepository, probabilityRepository);
+                    executor.execute(saveTask);
+                });
+                executor.execute(summedDataTask);
             });
-            readFilesTask.run();
+            executor.execute(readFilesTask);
         });
-        loadFileInfoTask.run();
+        executor.execute(loadFileInfoTask);
     }
 
 }

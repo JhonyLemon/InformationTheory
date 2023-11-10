@@ -1,5 +1,6 @@
 package pl.polsl.informationtheory.fxml.task;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import pl.polsl.informationtheory.enums.TaskType;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,31 +24,33 @@ public class LoadFileInfoTask extends Task<List<FileInfo>> {
 
     @Override
     protected void updateProgress(double v, double v1) {
-        onUpdate.onProgressUpdate(v/v1, TYPE);
+        Platform.runLater(() -> onUpdate.onProgressUpdate(v/v1, TYPE));
         super.updateProgress(v, v1);
     }
 
     @Override
     protected void updateMessage(String s) {
-        onUpdate.onMessagesUpdate(s, TYPE);
+        Platform.runLater(() -> onUpdate.onMessagesUpdate(s, TYPE));
         super.updateMessage(s);
     }
 
     @Override
     protected void succeeded() {
+        log.info("Task: {} succeeded", TYPE);
         onUpdate.onFinish(true, TYPE);
         super.succeeded();
     }
 
     @Override
     protected void failed() {
+        log.info("Task: {} failed", TYPE);
         onUpdate.onFinish(false, TYPE);
         super.failed();
     }
 
     @Override
     protected List<FileInfo> call() {
-        List<FileInfo> fileInfos = new ArrayList<>();
+        List<FileInfo> fileInfos = Collections.synchronizedList(new ArrayList<>());
         if (Objects.isNull(files) || files.isEmpty()) {
             log.error("No valid files selected");
             updateMessage("No valid files selected");
@@ -57,7 +61,7 @@ public class LoadFileInfoTask extends Task<List<FileInfo>> {
         log.info("Saving files information");
         updateMessage("Saving files information");
 
-        files.stream().filter(f -> AvailableFileExtensions.isExtension(f.getName()))
+        files.parallelStream().filter(f -> AvailableFileExtensions.isExtension(f.getName()))
                         .forEach(f -> {
                             fileInfos.add(new FileInfo(
                                     f.getAbsolutePath(),

@@ -34,6 +34,8 @@
                 <ProgressBar fx:id="loadFilesProgress" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" progress="0.0" />
                 <Label fx:id="readFilesLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Reading content of files" />
                 <ProgressBar fx:id="readFilesProgress" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" progress="0.0" />
+                <Label fx:id="savingDataLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Saving probability" />
+                <ProgressBar fx:id="savingDataProgress" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
             </children>
         </VBox>
     </top>

@@ -1,5 +1,6 @@
 package pl.polsl.informationtheory.fxml.task;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,31 +21,33 @@ public class ReadFilesTask extends Task<Map<FileInfo, FileData>> {
 
     @Override
     protected void updateProgress(double v, double v1) {
-        onUpdate.onProgressUpdate(v/v1, TYPE);
+        Platform.runLater(() -> onUpdate.onProgressUpdate(v/v1, TYPE));
         super.updateProgress(v, v1);
     }
 
     @Override
     protected void updateMessage(String s) {
-        onUpdate.onMessagesUpdate(s, TYPE);
+        Platform.runLater(() -> onUpdate.onMessagesUpdate(s, TYPE));
         super.updateMessage(s);
     }
 
     @Override
     protected void succeeded() {
-        onUpdate.onFinish(true, TYPE);
+        log.info("Task: {} succeeded", TYPE);
+        Platform.runLater(() -> onUpdate.onFinish(true, TYPE));
         super.succeeded();
     }
 
     @Override
     protected void failed() {
-        onUpdate.onFinish(false, TYPE);
+        log.info("Task: {} failed", TYPE);
+        Platform.runLater(() -> onUpdate.onFinish(false, TYPE));
         super.failed();
     }
 
     @Override
     protected Map<FileInfo, FileData> call() {
-        Map<FileInfo, FileData> fileDataMap = new HashMap<>();
+        Map<FileInfo, FileData> fileDataMap = Collections.synchronizedMap(new HashMap<>());
 
         if (Objects.isNull(fileInfos) || fileInfos.isEmpty()) {
             log.error("No valid files selected");
@@ -55,7 +58,7 @@ public class ReadFilesTask extends Task<Map<FileInfo, FileData>> {
         }
         updateMessage("Staring to load content from files");
         log.info("Staring to load content from files");
-        fileInfos.forEach(f -> {
+        fileInfos.parallelStream().forEach(f -> {
             try {
                 fileDataMap.put(
                         f,

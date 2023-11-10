@@ -4,6 +4,6 @@ public enum TaskType {
     DIR_SEARCHING,
     FILE_LOADING,
     FILE_READING,
-    CALCULATING,
+    SUMMING,
     SAVING
 }
