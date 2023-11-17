@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.layout.BorderPane?>
-<?import org.controlsfx.control.SearchableComboBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import org.controlsfx.control.*?>
 
-<?import pl.polsl.informationtheory.fxml.component.LatexPaneView?>
-<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.EntropyViewController">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.EntropyViewController">
    <center>
    </center>
    <top>
@@ -14,11 +15,25 @@
             <SearchableComboBox fx:id="fileSelection" onAction="#fileSelection" BorderPane.alignment="CENTER" />
          </center>
          <left>
-            <CheckBox fx:id="allFiles" mnemonicParsing="false" onAction="#allFiles" prefWidth="80.0" text="Wszystkie" BorderPane.alignment="CENTER" />
+            <CheckBox fx:id="allFiles" mnemonicParsing="false" onAction="#allFiles" prefWidth="80.0" text="All" BorderPane.alignment="CENTER" />
          </left>
+         <bottom>
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="Whole file entropy">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font></Label>
+                  <Label fx:id="entropyForFile" text="test">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding></Label>
+               </children>
+            </HBox>
+         </bottom>
       </BorderPane>
    </top>
    <center>
-      <LatexPaneView fx:id="latexPaneView" BorderPane.alignment="CENTER"></LatexPaneView>
+      <ListView fx:id="entropyList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>

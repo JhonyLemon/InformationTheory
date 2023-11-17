@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import pl.polsl.informationtheory.enums.DataType;
+import pl.polsl.informationtheory.util.MathExtension;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -35,9 +36,9 @@ public class Data {
         if(!initialized) {
             this.initialized = true;
             this.probability = BigDecimal.valueOf(this.count)
-                      .setScale(5, RoundingMode.HALF_UP)
+                      .setScale(10, RoundingMode.HALF_UP)
                       .divide(BigDecimal.valueOf(this.countAll), RoundingMode.HALF_UP);
-            this.elementaryInformationAmount = log(2,  this.probability).negate();
+            this.elementaryInformationAmount = BigDecimal.valueOf(MathExtension.log2(this.probability.doubleValue(), 2)).negate();
             this.entropy = this.probability.multiply(this.elementaryInformationAmount);
         }
     }

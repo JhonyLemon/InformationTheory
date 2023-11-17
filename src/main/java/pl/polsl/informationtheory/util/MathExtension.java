@@ -18,6 +18,7 @@ public class MathExtension {
         return Math.round(v * decimalPoints) / decimalPoints;
     }
 
+    //NOT WORKING
     /**
      * from www.java2s.com
      * @see <a href="http://stackoverflow.com/questions/739532/logarithm-of-a-bigdecimal">for</a>

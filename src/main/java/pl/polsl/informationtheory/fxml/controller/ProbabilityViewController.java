@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import pl.polsl.informationtheory.entity.Data;
 import pl.polsl.informationtheory.entity.FileInfo;
 import pl.polsl.informationtheory.enums.DataType;
-import pl.polsl.informationtheory.fxml.factory.DataCellFactory;
+import pl.polsl.informationtheory.fxml.factory.ProbabilityDataCellFactory;
 import pl.polsl.informationtheory.service.MenuOptionsService;
 import pl.polsl.informationtheory.service.file.FileService;
 import pl.polsl.informationtheory.service.probability.ProbabilityService;
@@ -49,7 +49,7 @@ public class ProbabilityViewController implements Initializable {
         menuOptionsService.getComparator().addListener((observableValue, dataComparator, t1) -> FXCollections.sort(probabilityList.getItems(), menuOptionsService.getComparator().getValue()));
         menuOptionsService.useUnicode().addListener((observableValue, dataComparator, t1) -> probabilityList.refresh());
 
-        probabilityList.setCellFactory(new DataCellFactory(menuOptionsService.useUnicode()));
+        probabilityList.setCellFactory(new ProbabilityDataCellFactory(menuOptionsService.useUnicode()));
         typeSelection.getItems().setAll(DataType.values());
 
         allFiles.setDisable(true);

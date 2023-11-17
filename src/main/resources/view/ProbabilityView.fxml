@@ -21,7 +21,7 @@
             <ComboBox fx:id="typeSelection" onAction="#typeSelection" prefWidth="150.0" BorderPane.alignment="CENTER" />
          </right>
          <left>
-            <CheckBox fx:id="allFiles" mnemonicParsing="false" onAction="#allFiles" prefWidth="80.0" text="Wszystkie" BorderPane.alignment="CENTER" />
+            <CheckBox fx:id="allFiles" mnemonicParsing="false" onAction="#allFiles" prefWidth="80.0" text="All" BorderPane.alignment="CENTER" />
          </left>
       </BorderPane>
    </top>

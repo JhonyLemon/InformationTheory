@@ -116,6 +116,7 @@ public class MainViewController implements Initializable {
                 tabPane.getTabs().add(entropyTabComp);
                 tabPane.getTabs().add(compressionTabComp);
                 probabilityTabController.defaultInit();
+                entropyTabController.defaultInit();
             }
         });
     }

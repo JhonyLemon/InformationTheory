@@ -15,10 +15,10 @@ import pl.polsl.informationtheory.enums.WhitespaceCharacters;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class DataCellFactory implements Callback<ListView<Data>, ListCell<Data>> {
+public class ProbabilityDataCellFactory implements Callback<ListView<Data>, ListCell<Data>> {
     private final BooleanProperty useUnicode = new SimpleBooleanProperty();
 
-    public DataCellFactory(ObservableValue<Boolean> useUnicode) {
+    public ProbabilityDataCellFactory(ObservableValue<Boolean> useUnicode) {
         this.useUnicode.bind(useUnicode);
     }
 

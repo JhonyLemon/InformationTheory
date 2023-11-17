@@ -7,6 +7,7 @@ import pl.polsl.informationtheory.entity.FileInfo;
 import pl.polsl.informationtheory.enums.DataType;
 import pl.polsl.informationtheory.repository.ProbabilityRepository;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +32,10 @@ public class ProbabilityService {
         }
     }
 
-    public void sort() {
-
+    public BigDecimal entropyFor(List<Data> data) {
+        return data.stream()
+                .map(Data::getEntropy)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 }
