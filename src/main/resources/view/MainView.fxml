@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -7,7 +8,7 @@
     <center>
         <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <tabs>
-                <Tab fx:id="loadingTabComp" closable="false" text="Compression">
+                <Tab fx:id="loadingTabComp" closable="false" text="Loading">
                     <content>
                         <fx:include fx:id="loadingTab" source="LoadingView.fxml" />
                     </content>
@@ -63,6 +64,17 @@
                                 <CheckMenuItem fx:id="whitespaceCharDisplayLabel" onAction="#whitespaceCharDisplayLabel" text="Code name" />
                             </items>
                         </Menu>
+                  <CustomMenuItem mnemonicParsing="false" text="Logarithm base">
+                    <content>
+                        <HBox>
+                            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-text-fill: black;" text="Logarithm base">
+                              <padding>
+                                 <Insets right="10.0" />
+                              </padding></Label>
+                            <TextField fx:id="logarithmBase" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#onLogarithmBaseChange" />
+                        </HBox>
+                    </content>
+                  </CustomMenuItem>
                     </items>
                 </Menu>
             </menus>

@@ -55,7 +55,7 @@ public class EntropyDataCellFactory implements Callback<ListView<Data>, ListCell
                     extra1.setText(
                             data.getElementaryInformationAmount().toString()
                     );
-                    extra1.setText(
+                    extra2.setText(
                             data.getEntropy().toString()
                     );
                 }

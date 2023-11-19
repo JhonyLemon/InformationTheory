@@ -1,9 +1,6 @@
 package pl.polsl.informationtheory.repository;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.stereotype.Repository;
@@ -17,5 +14,10 @@ public class MenuOptionsRepository {
     @Accessors(fluent = true)
     private final BooleanProperty useUnicode = new SimpleBooleanProperty(true);
     private final ObjectProperty<Comparator<Data>> currentlySelectedComparator = new SimpleObjectProperty<>(Data.Comparator.countDescending());
+    private final IntegerProperty logarithmBase = new SimpleIntegerProperty(2);
 
+
+    public void setLogarithmBase(String value) {
+        logarithmBase.setValue(Integer.valueOf(value));
+    }
 }

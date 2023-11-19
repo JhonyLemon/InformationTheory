@@ -6,12 +6,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.*;
 import javafx.util.Duration;
+import javafx.util.converter.NumberStringConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.controlsfx.control.NotificationPane;
@@ -70,6 +69,9 @@ public class MainViewController implements Initializable {
     @FXML
     private Tab loadingTabComp;
 
+    @FXML
+    private TextField logarithmBase;
+
     private final FileChooser fileDialog = new FileChooser();
     private final DirectoryChooser directoryDialog = new DirectoryChooser();
 
@@ -84,6 +86,8 @@ public class MainViewController implements Initializable {
         sortCountDecreasing.setSelected(true);
         whitespaceCharDisplayUnicode.setSelected(true);
         tabPane.getTabs().clear();
+        logarithmBase.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
+        logarithmBase.setText("2");
     }
 
     public void openFile() {
@@ -167,5 +171,10 @@ public class MainViewController implements Initializable {
     private void deselectAllWhitespaceButtons() {
         whitespaceCharDisplayUnicode.setSelected(false);
         whitespaceCharDisplayLabel.setSelected(false);
+    }
+
+
+    public void onLogarithmBaseChange(ActionEvent event) {
+        menuOptionsRepository.setLogarithmBase(logarithmBase.getText());
     }
 }
