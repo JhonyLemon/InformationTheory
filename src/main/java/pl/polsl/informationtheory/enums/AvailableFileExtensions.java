@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import javafx.stage.FileChooser;
 import lombok.Getter;
 import pl.polsl.informationtheory.exception.InformationTechnologyException;
+import pl.polsl.informationtheory.service.probability.file.ProbabilityPdfFileProcessor;
 import pl.polsl.informationtheory.service.probability.file.ProbabilityProcessor;
 import pl.polsl.informationtheory.service.probability.file.ProbabilityTextFileProcessor;
 
@@ -12,7 +13,8 @@ import java.util.List;
 
 @Getter
 public enum AvailableFileExtensions {
-    TEXT("Text Files",ProbabilityTextFileProcessor.class,"txt");
+    TEXT("Text Files",ProbabilityTextFileProcessor.class,"txt"),
+    PDF("Pdf Files",ProbabilityPdfFileProcessor.class,"pdf");
 
     private final FileChooser.ExtensionFilter filter;
     private final Class<? extends ProbabilityProcessor> probabilityProcessor;
