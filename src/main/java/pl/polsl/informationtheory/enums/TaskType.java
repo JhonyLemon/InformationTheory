@@ -5,5 +5,6 @@ public enum TaskType {
     FILE_LOADING,
     FILE_READING,
     SUMMING,
-    SAVING
+    SAVING,
+    COMPRESSION
 }

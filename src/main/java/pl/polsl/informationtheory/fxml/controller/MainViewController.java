@@ -7,18 +7,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.*;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.NumberStringConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.Notifications;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import pl.polsl.informationtheory.entity.Data;
 import pl.polsl.informationtheory.enums.AvailableFileExtensions;
+import pl.polsl.informationtheory.event.CompressionFinishedEvent;
 import pl.polsl.informationtheory.event.LoadingEvent;
 import pl.polsl.informationtheory.repository.MenuOptionsRepository;
 import pl.polsl.informationtheory.service.file.FileService;
@@ -28,8 +29,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import static javafx.concurrent.WorkerStateEvent.WORKER_STATE_SUCCEEDED;
 
 @Slf4j
 @Component
@@ -115,7 +114,7 @@ public class MainViewController implements Initializable {
                     .hideAfter(Duration.seconds(5))
                     .position(Pos.TOP_CENTER)
                     .show();
-            if(event.isSuccess()) {
+            if (event.isSuccess()) {
                 tabPane.getTabs().add(probabilityTabComp);
                 tabPane.getTabs().add(entropyTabComp);
                 tabPane.getTabs().add(compressionTabComp);
@@ -124,6 +123,22 @@ public class MainViewController implements Initializable {
             }
         });
     }
+
+    @EventListener
+    public void handleSuccessful(CompressionFinishedEvent event) {
+        Platform.runLater(() -> {
+            Notifications
+                    .create()
+                    .owner(stageReadOnly.getValue())
+                    .title("Compression finished")
+                    .text("Succeeded")
+                    .hideAfter(Duration.seconds(5))
+                    .position(Pos.TOP_CENTER)
+                    .show();
+            compressionTabController.defaultInit();
+        });
+    }
+
 
     public void sortCountDecreasing(ActionEvent event) {
         deselectAllSortButtons();
