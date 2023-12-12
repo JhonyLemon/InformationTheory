@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<VBox xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-      fx:id="compressionVBox" fx:controller="pl.polsl.informationtheory.fxml.controller.CompressionViewController">
-    <ListView fx:id="compressionSummary" prefWidth="200.0" BorderPane.alignment="CENTER"/>
-</VBox>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.CompressionViewController">
+    <top>
+        <VBox fx:id="compressionVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+
+        </VBox>
+    </top>
+    <center>
+        <ListView fx:id="compressionSummary" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" />
+    </center>
+</BorderPane>
