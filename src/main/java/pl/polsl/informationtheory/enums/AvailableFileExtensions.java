@@ -4,17 +4,25 @@ import com.google.common.io.Files;
 import javafx.stage.FileChooser;
 import lombok.Getter;
 import pl.polsl.informationtheory.exception.InformationTechnologyException;
+import pl.polsl.informationtheory.service.probability.file.ProbabilityDocFileProcessor;
 import pl.polsl.informationtheory.service.probability.file.ProbabilityPdfFileProcessor;
 import pl.polsl.informationtheory.service.probability.file.ProbabilityProcessor;
 import pl.polsl.informationtheory.service.probability.file.ProbabilityTextFileProcessor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public enum AvailableFileExtensions {
     TEXT("Text Files",ProbabilityTextFileProcessor.class,"txt"),
-    PDF("Pdf Files",ProbabilityPdfFileProcessor.class,"pdf");
+    PDF("Pdf Files",ProbabilityPdfFileProcessor.class,"pdf"),
+    DOC("Doc Files", ProbabilityDocFileProcessor.class,"doc"),
+    DOCX("Docx Files",ProbabilityDocFileProcessor.class,"docx"),
+    EXCEL_XLSX("Excel Files",ProbabilityDocFileProcessor.class,"xlsx"),
+    POWERPOINT_PPTX("Powerpoint Files",ProbabilityDocFileProcessor.class,"pptx"),
+    POWERPOINT_PPT("Powerpoint Files",ProbabilityDocFileProcessor.class,"ppt");
 
     private final FileChooser.ExtensionFilter filter;
     private final Class<? extends ProbabilityProcessor> probabilityProcessor;
@@ -28,9 +36,18 @@ public enum AvailableFileExtensions {
     }
 
     public static List<FileChooser.ExtensionFilter> getAllFilters() {
-        return Arrays.stream(AvailableFileExtensions.values())
-                .map(AvailableFileExtensions::getFilter)
-                .toList();
+        List<FileChooser.ExtensionFilter> extensionFilters = new ArrayList<>();
+        extensionFilters.add(new FileChooser.ExtensionFilter(
+                "All",
+                Arrays.stream(AvailableFileExtensions.values())
+                        .map(AvailableFileExtensions::getExtension)
+                        .flatMap(List::stream)
+                        .map(e -> "*."+e)
+                        .toList()
+        ));
+        extensionFilters.addAll(Arrays.stream(AvailableFileExtensions.values())
+                .map(AvailableFileExtensions::getFilter).toList());
+        return extensionFilters;
     }
 
     public static List<String> getAllExtensions() {

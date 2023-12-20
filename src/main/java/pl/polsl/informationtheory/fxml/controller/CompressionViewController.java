@@ -26,7 +26,9 @@ public class CompressionViewController implements Initializable {
     private static final int ROW_HEIGHT = 25;
 
     @FXML
-    private VBox compressionVBox;
+    private Label winningFrequency;
+    @FXML
+    private Label averageCompressionRatio;
 
     @FXML
     private ListView<FileCompressionSummary> compressionSummary;
@@ -41,7 +43,6 @@ public class CompressionViewController implements Initializable {
     public void defaultInit() {
         List<FileCompressionSummary> data = compressionService.getCompressionSummary();
         setCompressionSummary(data);
-        compressionSummary.prefHeightProperty().bind(Bindings.size(compressionSummary.getItems()).multiply(ROW_HEIGHT));
         compressionSummary.refresh();
         cleanOldCompressionReportsIfNecessary();
         addCompressionReportsToView(data);
@@ -53,32 +54,14 @@ public class CompressionViewController implements Initializable {
     }
 
     private void cleanOldCompressionReportsIfNecessary() {
-        if (compressionVBox.getChildren().size() == 3) {
-            compressionVBox.getChildren().remove(1, 3);
-        }
+        winningFrequency.setText("");
+        averageCompressionRatio.setText("");
     }
 
     private void addCompressionReportsToView(List<FileCompressionSummary> data) {
         String frequencyReport = compressionService.getWinningFrequencyReport(data);
         String averageCompressionRatioReport = compressionService.getAverageCompressionRatioReport(data);
-
-        HBox winningFrequencyHBox = getCustomizedHBox("Winning frequency", frequencyReport);
-        HBox averageCompressionRatioHBox = getCustomizedHBox("Average compression ratio", averageCompressionRatioReport);
-
-        compressionVBox.getChildren().addAll(winningFrequencyHBox, averageCompressionRatioHBox);
-    }
-
-    private HBox getCustomizedHBox(String extra, String value) {
-        Font font = new Font(18);
-
-        Label extraLabel = new Label(extra + ": ");
-        extraLabel.setFont(font);
-        extraLabel.setStyle("-fx-font-weight: bold");
-
-        Label valueLabel = new Label(value);
-        valueLabel.setFont(font);
-        valueLabel.setPadding(new Insets(0, 10, 0, 10));
-
-        return new HBox(extraLabel, valueLabel);
+        winningFrequency.setText(frequencyReport);
+        averageCompressionRatio.setText(averageCompressionRatioReport);
     }
 }

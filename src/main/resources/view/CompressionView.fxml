@@ -3,11 +3,37 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.CompressionViewController">
     <top>
         <VBox fx:id="compressionVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-
-        </VBox>
+         <children>
+             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+                 <children>
+                     <Label text="Winning frequency:">
+                         <font>
+                             <Font name="System Bold" size="13.0" />
+                         </font></Label>
+                     <Label fx:id="winningFrequency" text="test">
+                         <padding>
+                             <Insets left="20.0" />
+                         </padding></Label>
+                 </children>
+             </HBox>
+             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+                 <children>
+                     <Label text="Average compression ratio:">
+                         <font>
+                             <Font name="System Bold" size="13.0" />
+                         </font></Label>
+                     <Label fx:id="averageCompressionRatio" text="test">
+                         <padding>
+                             <Insets left="20.0" />
+                         </padding></Label>
+                 </children>
+             </HBox>
+         </children></VBox>
     </top>
     <center>
         <ListView fx:id="compressionSummary" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" />
