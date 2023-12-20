@@ -38,6 +38,7 @@ public class CompressionViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         compressionSummary.setCellFactory(new CompressionDataCellFactory());
+        cleanOldCompressionReportsIfNecessary();
     }
 
     public void defaultInit() {
