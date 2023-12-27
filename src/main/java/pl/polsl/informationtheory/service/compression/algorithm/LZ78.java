@@ -23,18 +23,12 @@ public class LZ78 implements Compression {
             currentPhrase.append((char) b);
 
             if (!dictionary.containsKey(currentPhrase.toString())) {
-                // Output the code for the current phrase (if it exists)
                 compressedTokens.add(new Token(code, b));
-
-                // Add the new phrase to the dictionary
                 dictionary.put(currentPhrase.toString(), ++code);
-
-                // Reset the current phrase
                 currentPhrase.setLength(0);
             }
         }
 
-        // Output the last code (if it exists)
         if (!currentPhrase.isEmpty()) {
             compressedTokens.add(new Token(code, (byte) 0)); // The last character is not part of the dictionary
         }

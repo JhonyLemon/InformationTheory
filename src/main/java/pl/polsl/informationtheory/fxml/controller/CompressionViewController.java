@@ -1,14 +1,16 @@
 package pl.polsl.informationtheory.fxml.controller;
 
-import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.polsl.informationtheory.entity.FileCompressionSummary;
@@ -16,14 +18,18 @@ import pl.polsl.informationtheory.fxml.factory.CompressionDataCellFactory;
 import pl.polsl.informationtheory.service.compression.CompressionService;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+
+import static javafx.geometry.Pos.CENTER;
+import static pl.polsl.informationtheory.service.compression.algorithm.util.DisplayHelper.displayAverage;
+import static pl.polsl.informationtheory.service.compression.algorithm.util.DisplayHelper.displayFrequency;
 
 @Component
 @RequiredArgsConstructor
 public class CompressionViewController implements Initializable {
-
-    private static final int ROW_HEIGHT = 25;
 
     @FXML
     private Label winningFrequency;
@@ -34,10 +40,15 @@ public class CompressionViewController implements Initializable {
     private ListView<FileCompressionSummary> compressionSummary;
 
     private final CompressionService compressionService;
+    private Map<String, Integer> frequencyMap = new HashMap<>();
+    private Map<String, Double> compressionRatioMap = new HashMap<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         compressionSummary.setCellFactory(new CompressionDataCellFactory());
+        setCompressionSummaryListViewClickListener();
+        setWinningFrequencyLabelClickListener();
+        setAverageCompressionRatioLabelClickListener();
         cleanOldCompressionReportsIfNecessary();
     }
 
@@ -46,7 +57,8 @@ public class CompressionViewController implements Initializable {
         setCompressionSummary(data);
         compressionSummary.refresh();
         cleanOldCompressionReportsIfNecessary();
-        addCompressionReportsToView(data);
+        initCompressionData(data);
+        setCompressionReports();
     }
 
     private void setCompressionSummary(List<FileCompressionSummary> data) {
@@ -55,14 +67,142 @@ public class CompressionViewController implements Initializable {
     }
 
     private void cleanOldCompressionReportsIfNecessary() {
+        frequencyMap.clear();
+        compressionRatioMap.clear();
         winningFrequency.setText("");
         averageCompressionRatio.setText("");
     }
 
-    private void addCompressionReportsToView(List<FileCompressionSummary> data) {
-        String frequencyReport = compressionService.getWinningFrequencyReport(data);
-        String averageCompressionRatioReport = compressionService.getAverageCompressionRatioReport(data);
+    private void initCompressionData(List<FileCompressionSummary> data) {
+        frequencyMap = compressionService.getWinningFrequencyReport(data);
+        compressionRatioMap = compressionService.getAverageCompressionRatioReport(data);
+    }
+
+    private void setCompressionReports() {
+        String frequencyReport = displayFrequency(frequencyMap);
+        String averageCompressionRatioReport = displayAverage(compressionRatioMap);
         winningFrequency.setText(frequencyReport);
         averageCompressionRatio.setText(averageCompressionRatioReport);
+    }
+
+    private void setCompressionSummaryListViewClickListener() {
+        compressionSummary.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2 && compressionSummary.getSelectionModel().getSelectedItem() != null) {
+                showCompressionSummaryChartWindow(compressionSummary.getSelectionModel().getSelectedItem());
+            }
+        });
+    }
+
+    private void setWinningFrequencyLabelClickListener() {
+        winningFrequency.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                showWinningFrequencyChartWindow();
+            }
+        });
+    }
+
+    private void setAverageCompressionRatioLabelClickListener() {
+        averageCompressionRatio.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                showAverageCompressionRatioChartWindow();
+            }
+        });
+    }
+
+    private void showCompressionSummaryChartWindow(FileCompressionSummary selectedSummary) {
+        Stage chartStage = new Stage();
+        String fileName = selectedSummary.getInfo().getPath();
+        chartStage.setTitle("Compression summary for file: " + fileName);
+
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Compression algorithm");
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Compression ratio");
+        BarChart<String, Number> compressionRatioBarChart = new BarChart<>(xAxis, yAxis);
+        compressionRatioBarChart.setTitle("Compression ratio chart");
+
+        XYChart.Series<String, Number> winningFrequencyData = getCompressionRatioSeriesData(selectedSummary);
+        compressionRatioBarChart.getData().add(winningFrequencyData);
+
+        chartStage.setScene(new Scene(compressionRatioBarChart, 800, 600));
+        chartStage.show();
+    }
+
+    private void showWinningFrequencyChartWindow() {
+        Stage chartStage = new Stage();
+        chartStage.setTitle("Compression winning frequency chart");
+
+        ObservableList<PieChart.Data> pieChartData = getFrequencyPieChartData();
+        PieChart pieChart = new PieChart(pieChartData);
+        pieChart.setTitle("Winning frequency chart");
+
+        Scene chartScene = new Scene(pieChart, 800, 600);
+        chartStage.setScene(chartScene);
+        chartStage.show();
+    }
+
+    private void showAverageCompressionRatioChartWindow() {
+        Stage chartStage = new Stage();
+        chartStage.setTitle("Average compression ratio chart");
+
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Compression algorithm");
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Average compression ratio");
+        BarChart<String, Number> compressionRatioBarChart = new BarChart<>(xAxis, yAxis);
+        compressionRatioBarChart.setTitle("Compression ratio chart");
+
+        XYChart.Series<String, Number> compressionRatioData = getAverageCompressionRatioSeriesData();
+        compressionRatioBarChart.getData().add(compressionRatioData);
+
+        chartStage.setScene(new Scene(compressionRatioBarChart, 800, 600));
+        chartStage.show();
+    }
+
+    private XYChart.Series<String, Number> getCompressionRatioSeriesData(FileCompressionSummary fileCompressionSummary) {
+        XYChart.Series<String, Number> winningFrequencySeriesData = new XYChart.Series<>();
+
+        fileCompressionSummary.getCompressionResults().forEach(element ->
+                winningFrequencySeriesData.getData().add(createData(element.getAlgorithmClassName(), element.getCompressionRatio())));
+
+        return winningFrequencySeriesData;
+    }
+
+    private XYChart.Series<String, Number> getAverageCompressionRatioSeriesData() {
+        XYChart.Series<String, Number> compressionRatioSeriesData = new XYChart.Series<>();
+
+        compressionRatioMap.forEach((key, value) ->
+                compressionRatioSeriesData.getData().add(createData(key, value)));
+
+        return compressionRatioSeriesData;
+    }
+
+    private ObservableList<PieChart.Data> getFrequencyPieChartData() {
+        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+        int count = compressionSummary.getItems().size();
+
+        frequencyMap.forEach((key, value) -> {
+            double calculatedValue = (double) value / count;
+            PieChart.Data data = new PieChart.Data(key, calculatedValue);
+            String percentage = 100 * calculatedValue + "%";
+            data.nameProperty().set(percentage);
+            data.setName(key + "[" + percentage + "]");
+            pieChartData.add(data);
+        });
+
+        return pieChartData;
+    }
+
+    private XYChart.Data<String, Number> createData(String key, double value) {
+        XYChart.Data<String, Number> data = new XYChart.Data<>(key, value);
+
+        StackPane node = new StackPane();
+        Label label = new Label(String.format("%.2f", value));
+        Group group = new Group(label);
+        StackPane.setAlignment(group, CENTER);
+        node.getChildren().add(group);
+        data.setNode(node);
+
+        return data;
     }
 }

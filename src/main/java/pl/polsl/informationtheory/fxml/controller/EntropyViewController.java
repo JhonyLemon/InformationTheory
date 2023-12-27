@@ -70,12 +70,13 @@ public class EntropyViewController implements Initializable {
         this.entropyList.getItems().clear();
         this.entropyList.getItems().addAll(data);
         FXCollections.sort(entropyList.getItems(), Data.Comparator.valueAscending());
-        entropyForFile.setText(probabilityService.entropyFor(data).toString());
+        String entropyValue = String.format("%.2f", probabilityService.entropyFor(data));
+        entropyForFile.setText(entropyValue);
     }
 
 
     public void allFiles(ActionEvent event) {
-        if(allFiles.isSelected()) {
+        if (allFiles.isSelected()) {
             fileSelection.setDisable(true);
             fileSelection.setValue(null);
             setSelectedList(probabilityService.getAllList(DataType.CHARACTER));
@@ -86,7 +87,7 @@ public class EntropyViewController implements Initializable {
     }
 
     public void fileSelection(ActionEvent event) {
-        if(isFileSelected()) {
+        if (isFileSelected()) {
             setSelectedList(probabilityService.getList(DataType.CHARACTER, fileSelection.getValue()));
         }
     }

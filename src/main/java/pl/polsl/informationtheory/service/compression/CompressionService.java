@@ -22,11 +22,11 @@ public class CompressionService {
         return resultsMap.entrySet().stream().map(entry -> new FileCompressionSummary(entry.getKey(), entry.getValue())).toList();
     }
 
-    public String getWinningFrequencyReport(List<FileCompressionSummary> data) {
+    public Map<String, Integer> getWinningFrequencyReport(List<FileCompressionSummary> data) {
         return reportGenerator.getWinningFrequencyReport(data);
     }
 
-    public String getAverageCompressionRatioReport(List<FileCompressionSummary> data) {
+    public Map<String, Double> getAverageCompressionRatioReport(List<FileCompressionSummary> data) {
         return reportGenerator.getAverageCompressionRatioReport(data);
     }
 }

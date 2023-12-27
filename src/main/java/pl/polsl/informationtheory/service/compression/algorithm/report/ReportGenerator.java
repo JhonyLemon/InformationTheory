@@ -7,23 +7,19 @@ import pl.polsl.informationtheory.entity.FileCompressionSummary;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static pl.polsl.informationtheory.service.compression.algorithm.util.DisplayHelper.displayAverage;
-import static pl.polsl.informationtheory.service.compression.algorithm.util.DisplayHelper.displayFrequency;
 import static pl.polsl.informationtheory.service.compression.algorithm.util.SortingHelper.sortByValueDescending;
 
 @Component
 public class ReportGenerator {
 
-    public String getWinningFrequencyReport(List<FileCompressionSummary> data) {
+    public Map<String, Integer> getWinningFrequencyReport(List<FileCompressionSummary> data) {
         Map<String, Integer> winningFrequencyMap = calculateWinningFrequency(data);
-        Map<String, Integer> sortedMap = sortByValueDescending(winningFrequencyMap);
-        return displayFrequency(sortedMap);
+        return sortByValueDescending(winningFrequencyMap);
     }
 
-    public String getAverageCompressionRatioReport(List<FileCompressionSummary> data) {
+    public Map<String, Double> getAverageCompressionRatioReport(List<FileCompressionSummary> data) {
         Map<String, Double> averageCompressionRatios = calculateAverageCompressionRatios(data);
-        Map<String, Double> sortedMap = sortByValueDescending(averageCompressionRatios);
-        return displayAverage(sortedMap);
+        return sortByValueDescending(averageCompressionRatios);
     }
 
     private Map<String, Integer> calculateWinningFrequency(List<FileCompressionSummary> data) {
