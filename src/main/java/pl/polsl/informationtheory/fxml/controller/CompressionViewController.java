@@ -15,8 +15,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.polsl.informationtheory.entity.FileCompressionSummary;
 import pl.polsl.informationtheory.fxml.factory.CompressionDataCellFactory;
+import pl.polsl.informationtheory.repository.MenuOptionsRepository;
 import pl.polsl.informationtheory.service.compression.CompressionService;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +38,8 @@ public class CompressionViewController implements Initializable {
     private Label winningFrequency;
     @FXML
     private Label averageCompressionRatio;
+
+    private final MenuOptionsRepository menuOptionsRepository;
 
     @FXML
     private ListView<FileCompressionSummary> compressionSummary;
@@ -163,7 +168,9 @@ public class CompressionViewController implements Initializable {
         XYChart.Series<String, Number> winningFrequencySeriesData = new XYChart.Series<>();
 
         fileCompressionSummary.getCompressionResults().forEach(element ->
-                winningFrequencySeriesData.getData().add(createData(element.getAlgorithmClassName(), element.getCompressionRatio())));
+        {
+            winningFrequencySeriesData.getData().add(createData(element.getAlgorithmClassName(), element.getCompressionRatio()));
+        });
 
         return winningFrequencySeriesData;
     }
@@ -182,9 +189,10 @@ public class CompressionViewController implements Initializable {
         int count = compressionSummary.getItems().size();
 
         frequencyMap.forEach((key, value) -> {
-            double calculatedValue = (double) value / count;
+            double calculatedValue = BigDecimal.valueOf(100 *(double) value / count).setScale(menuOptionsRepository.getDecimalPlaces().get(), RoundingMode.HALF_UP).doubleValue();
+
             PieChart.Data data = new PieChart.Data(key, calculatedValue);
-            String percentage = 100 * calculatedValue + "%";
+            String percentage =  calculatedValue + "%";
             data.nameProperty().set(percentage);
             data.setName(key + "[" + percentage + "]");
             pieChartData.add(data);
@@ -197,7 +205,7 @@ public class CompressionViewController implements Initializable {
         XYChart.Data<String, Number> data = new XYChart.Data<>(key, value);
 
         StackPane node = new StackPane();
-        Label label = new Label(String.format("%.2f", value));
+        Label label = new Label(String.format("%.2f", BigDecimal.valueOf(value).setScale(menuOptionsRepository.getDecimalPlaces().get(), RoundingMode.HALF_UP).doubleValue()));
         Group group = new Group(label);
         StackPane.setAlignment(group, CENTER);
         node.getChildren().add(group);

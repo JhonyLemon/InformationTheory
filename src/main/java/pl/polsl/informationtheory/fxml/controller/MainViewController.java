@@ -71,6 +71,9 @@ public class MainViewController implements Initializable {
     @FXML
     private TextField logarithmBase;
 
+    @FXML
+    private TextField decimalPlaces;
+
     private final FileChooser fileDialog = new FileChooser();
     private final DirectoryChooser directoryDialog = new DirectoryChooser();
 
@@ -87,6 +90,8 @@ public class MainViewController implements Initializable {
         tabPane.getTabs().clear();
         logarithmBase.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
         logarithmBase.setText("2");
+        decimalPlaces.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
+        decimalPlaces.setText("10");
     }
 
     public void openFile() {
@@ -191,5 +196,9 @@ public class MainViewController implements Initializable {
 
     public void onLogarithmBaseChange(ActionEvent event) {
         menuOptionsRepository.setLogarithmBase(logarithmBase.getText());
+    }
+
+    public void onDecimalPlacesChange(ActionEvent event) {
+        menuOptionsRepository.setDecimalPlaces(decimalPlaces.getText());
     }
 }

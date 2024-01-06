@@ -16,6 +16,7 @@ public class TaskManagerConfiguration implements AsyncConfigurer {
 
     @PostConstruct
     private void postConstruct() {
+        threadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(false);
         threadPoolTaskExecutor.initialize();
     }
 

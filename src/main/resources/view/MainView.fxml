@@ -4,28 +4,31 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.informationtheory.fxml.controller.MainViewController">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+            xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pl.polsl.informationtheory.fxml.controller.MainViewController">
     <center>
-        <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
+                 BorderPane.alignment="CENTER">
             <tabs>
                 <Tab fx:id="loadingTabComp" closable="false" text="Loading">
                     <content>
-                        <fx:include fx:id="loadingTab" source="LoadingView.fxml" />
+                        <fx:include fx:id="loadingTab" source="LoadingView.fxml"/>
                     </content>
                 </Tab>
                 <Tab fx:id="probabilityTabComp" closable="false" text="Probability">
                     <content>
-                        <fx:include fx:id="probabilityTab" source="ProbabilityView.fxml" />
+                        <fx:include fx:id="probabilityTab" source="ProbabilityView.fxml"/>
                     </content>
                 </Tab>
                 <Tab fx:id="entropyTabComp" closable="false" text="Entropy">
                     <content>
-                        <fx:include fx:id="entropyTab" source="EntropyView.fxml" />
+                        <fx:include fx:id="entropyTab" source="EntropyView.fxml"/>
                     </content>
                 </Tab>
                 <Tab fx:id="compressionTabComp" closable="false" text="Compression">
                     <content>
-                        <fx:include fx:id="compressionTab" source="CompressionView.fxml" />
+                        <fx:include fx:id="compressionTab" source="CompressionView.fxml"/>
                     </content>
                 </Tab>
             </tabs>
@@ -36,8 +39,10 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="openFileMenuButton" mnemonicParsing="false" onAction="#openFile" text="Open file" />
-                        <MenuItem fx:id="openFolderMenuButton" mnemonicParsing="false" onAction="#openFolder" text="Open directory" />
+                        <MenuItem fx:id="openFileMenuButton" mnemonicParsing="false" onAction="#openFile"
+                                  text="Open file"/>
+                        <MenuItem fx:id="openFolderMenuButton" mnemonicParsing="false" onAction="#openFolder"
+                                  text="Open directory"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -46,35 +51,58 @@
                             <items>
                                 <Menu mnemonicParsing="false" text="Count">
                                     <items>
-                                        <CheckMenuItem fx:id="sortCountDecreasing" onAction="#sortCountDecreasing" text="Descending" />
-                                        <CheckMenuItem fx:id="sortCountIncreasing" onAction="#sortCountIncreasing" text="Ascending" />
+                                        <CheckMenuItem fx:id="sortCountDecreasing" onAction="#sortCountDecreasing"
+                                                       text="Descending"/>
+                                        <CheckMenuItem fx:id="sortCountIncreasing" onAction="#sortCountIncreasing"
+                                                       text="Ascending"/>
                                     </items>
                                 </Menu>
                                 <Menu mnemonicParsing="false" text="Character/Word">
                                     <items>
-                                        <CheckMenuItem fx:id="sortIdentifierDecreasing" onAction="#sortIdentifierDecreasing" text="Descending" />
-                                        <CheckMenuItem fx:id="sortIdentifierIncreasing" onAction="#sortIdentifierIncreasing" text="Ascending" />
+                                        <CheckMenuItem fx:id="sortIdentifierDecreasing"
+                                                       onAction="#sortIdentifierDecreasing" text="Descending"/>
+                                        <CheckMenuItem fx:id="sortIdentifierIncreasing"
+                                                       onAction="#sortIdentifierIncreasing" text="Ascending"/>
                                     </items>
                                 </Menu>
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Whitespace characters">
                             <items>
-                                <CheckMenuItem fx:id="whitespaceCharDisplayUnicode" onAction="#whitespaceCharDisplayUnicode" text="Unicode" />
-                                <CheckMenuItem fx:id="whitespaceCharDisplayLabel" onAction="#whitespaceCharDisplayLabel" text="Code name" />
+                                <CheckMenuItem fx:id="whitespaceCharDisplayUnicode"
+                                               onAction="#whitespaceCharDisplayUnicode" text="Unicode"/>
+                                <CheckMenuItem fx:id="whitespaceCharDisplayLabel" onAction="#whitespaceCharDisplayLabel"
+                                               text="Code name"/>
                             </items>
                         </Menu>
-                  <CustomMenuItem mnemonicParsing="false" text="Logarithm base">
-                    <content>
-                        <HBox>
-                            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-text-fill: black;" text="Logarithm base">
-                              <padding>
-                                 <Insets right="10.0" />
-                              </padding></Label>
-                            <TextField fx:id="logarithmBase" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#onLogarithmBaseChange" />
-                        </HBox>
-                    </content>
-                  </CustomMenuItem>
+                        <CustomMenuItem mnemonicParsing="false" text="Logarithm base">
+                            <content>
+                                <HBox>
+                                    <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                                           style="-fx-text-fill: black;" text="Logarithm base">
+                                        <padding>
+                                            <Insets right="10.0"/>
+                                        </padding>
+                                    </Label>
+                                    <TextField fx:id="logarithmBase" maxHeight="1.7976931348623157E308"
+                                               maxWidth="1.7976931348623157E308" onAction="#onLogarithmBaseChange"/>
+                                </HBox>
+                            </content>
+                        </CustomMenuItem>
+                        <CustomMenuItem mnemonicParsing="false" text="Decimal places">
+                            <content>
+                                <HBox>
+                                    <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                                           style="-fx-text-fill: black;" text="Decimal places">
+                                        <padding>
+                                            <Insets right="10.0"/>
+                                        </padding>
+                                    </Label>
+                                    <TextField fx:id="decimalPlaces" maxHeight="1.7976931348623157E308"
+                                               maxWidth="1.7976931348623157E308" onAction="#onDecimalPlacesChange"/>
+                                </HBox>
+                            </content>
+                        </CustomMenuItem>
                     </items>
                 </Menu>
             </menus>

@@ -15,9 +15,13 @@ public class MenuOptionsRepository {
     private final BooleanProperty useUnicode = new SimpleBooleanProperty(true);
     private final ObjectProperty<Comparator<Data>> currentlySelectedComparator = new SimpleObjectProperty<>(Data.Comparator.countDescending());
     private final IntegerProperty logarithmBase = new SimpleIntegerProperty(2);
-
+    private final IntegerProperty decimalPlaces = new SimpleIntegerProperty(10);
 
     public void setLogarithmBase(String value) {
         logarithmBase.setValue(Integer.valueOf(value));
+    }
+
+    public void setDecimalPlaces(String value) {
+        decimalPlaces.setValue(Integer.valueOf(value));
     }
 }

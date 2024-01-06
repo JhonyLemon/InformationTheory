@@ -36,12 +36,16 @@ public class Data {
 
     public void initialize() {
         if(!initialized) {
+            MenuOptionsRepository mor = SpringContext.getBean(MenuOptionsRepository.class);
             this.initialized = true;
             this.probability = BigDecimal.valueOf(this.count)
-                      .setScale(10, RoundingMode.HALF_UP)
+                      .setScale(100, RoundingMode.HALF_UP)
                       .divide(BigDecimal.valueOf(this.countAll), RoundingMode.HALF_UP);
-            this.elementaryInformationAmount = BigDecimal.valueOf(MathExtension.log(this.probability.doubleValue(), SpringContext.getBean(MenuOptionsRepository.class).getLogarithmBase().get())).negate();
+            this.elementaryInformationAmount = BigDecimal.valueOf(MathExtension.log(this.probability.doubleValue(), mor.getLogarithmBase().get())).negate();
             this.entropy = this.probability.multiply(this.elementaryInformationAmount);
+
+            this.probability = this.probability.setScale(mor.getDecimalPlaces().get(), RoundingMode.HALF_UP);
+            this.entropy = this.entropy.setScale(mor.getDecimalPlaces().get(), RoundingMode.HALF_UP);
         }
     }
 

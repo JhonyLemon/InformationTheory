@@ -46,6 +46,7 @@ public class FileService {
             LoadFileInfoTask loadFileInfoTask = new LoadFileInfoTask(findFilesTask.getValue(), onUpdate);
             load(onUpdate, loadFileInfoTask);
         });
+
         executor.execute(findFilesTask);
     }
 

@@ -4,10 +4,12 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import pl.polsl.informationtheory.context.SpringContext;
 import pl.polsl.informationtheory.entity.Data;
 import pl.polsl.informationtheory.entity.FileData;
 import pl.polsl.informationtheory.entity.SummedData;
 import pl.polsl.informationtheory.enums.TaskType;
+import pl.polsl.informationtheory.repository.MenuOptionsRepository;
 
 import java.util.*;
 import java.util.stream.Stream;
